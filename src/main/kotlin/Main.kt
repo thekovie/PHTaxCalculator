@@ -1,7 +1,181 @@
-fun main(args: Array<String>) {
-    println("Hello World!")
+import java.io.File
+import java.time.Year
 
-    // Try adding program arguments via Run/Debug configuration.
-    // Learn more about running applications: https://www.jetbrains.com/help/idea/running-applications.html.
-    println("Program arguments: ${args.joinToString()}")
+data class incomeRange(val min: Double, val max: Double, val additional: Double, val percent: Double)
+data class philhealthRange(val year: Int, val max_salary: Double, val rate: Double)
+data class sssRange(val min: Double, val max: Double, val fee: Double)
+data class pagibigRange(val min: Double, val max: Double, val rate: Double)
+
+fun main() {
+    val incomeTable = File("src/main/resources/income_tax_table.csv")
+    val philhealthTable = File("src/main/resources/philhealth_table.csv")
+    val sssTable = File("src/main/resources/sss_table.csv")
+    val pagibigTable = File("src/main/resources/pagibig_tax.csv")
+
+    val readIncome = readIncomeTable(incomeTable)
+    val readPhilhealth = readPhilhealthTable(philhealthTable)
+    val readSSS = readSSSTable(sssTable)
+    val readPagibig = readPagibigTable(pagibigTable)
+
+    // Input salary
+    print("Enter your monthly salary: ")
+    val salary = readLine()!!.toDouble()
+
+    // Compute
+    val sssFee = computeSSS(salary, readSSS)
+    val philhealthFee = computePhilhealth(salary, readPhilhealth)
+    val pagibigFee = computepagIbig(salary, readPagibig)
+    val totalContributions = sssFee + philhealthFee + pagibigFee
+
+    println("\n== COMPUTATION RESULT ==\n")
+
+    // Monthly Contributions
+    println("-- Monthly Contributions --")
+    println("SSS: P ${String.format("%.2f", sssFee)}")
+    println("Philhealth: P ${String.format("%.2f", philhealthFee)}")
+    println("Pag-ibig: P ${String.format("%.2f", pagibigFee)}")
+    println("Total Contributions: P ${String.format("%.2f", totalContributions)}")
+
+    // Tax Computation
+    val incomeTax = computeIncomeTax(salary, totalContributions, readIncome)
+    val netPay = salary - incomeTax
+
+    println("\n-- Monthly Contributions --")
+    println("Income Tax: P ${String.format("%.2f", incomeTax)}")
+    println("Net Pay after Tax: P ${String.format("%.2f", netPay)}")
+
+    // Deductions
+    println("\n-- Deductions --")
+    println("Total Deductions: P ${String.format("%.2f", totalContributions + incomeTax)}")
+    println("Net Pay after Deductions: P ${String.format("%.2f", netPay - totalContributions)}")
+}
+
+fun readIncomeTable(file: File): List<incomeRange> {
+    val reader = file.bufferedReader()
+
+    // Skip header row
+    reader.readLine()
+
+    // Convert the CSV data to a list of Range objects
+    return reader.useLines { lines ->
+        lines.map { line ->
+            val values = line.split(",")
+            incomeRange(
+                min = values[0].toDouble(),
+                max = values[1].toDouble(),
+                additional = values[2].toDouble(),
+                percent = values[3].toDouble()
+            )
+        }.toList()
+    }
+}
+
+fun readPhilhealthTable(file: File): List<philhealthRange> {
+    val reader = file.bufferedReader()
+
+    // Skip header row
+    reader.readLine()
+
+    // Convert the CSV data to a list of Range objects
+    return reader.useLines { lines ->
+        lines.map { line ->
+            val values = line.split(",")
+            philhealthRange(
+                year = values[0].toInt(),
+                max_salary = values[1].toDouble(),
+                rate = values[2].toDouble()
+            )
+        }.toList()
+    }
+}
+
+fun readSSSTable(file: File): List<sssRange> {
+    val reader = file.bufferedReader()
+
+    // Skip header row
+    reader.readLine()
+
+    // Convert the CSV data to a list of Range objects
+    return reader.useLines { lines ->
+        lines.map { line ->
+            val values = line.split(",")
+            sssRange(
+                min = values[0].toDouble(),
+                max = values[1].toDouble(),
+                fee = values[2].toDouble()
+            )
+        }.toList()
+    }
+}
+
+fun readPagibigTable(file: File): List<pagibigRange> {
+    val reader = file.bufferedReader()
+
+    // Skip header row
+    reader.readLine()
+
+    // Convert the CSV data to a list of Range objects
+    return reader.useLines { lines ->
+        lines.map { line ->
+            val values = line.split(",")
+            pagibigRange(
+                min = values[0].toDouble(),
+                max = values[1].toDouble(),
+                rate = values[2].toDouble()
+            )
+        }.toList()
+    }
+}
+
+fun computeSSS(n: Double, ranges: List<sssRange>): Double {
+    return ranges.firstOrNull { range ->
+                (range.min == -1.0 && n <= range.max) || // If min is -1, then n should be less than or equal to max
+                (range.max == -1.0 && n >= range.min) || // If max is -1, then n should be greater than or equal to min
+                (n in range.min..range.max) // Otherwise, n should be within the min and max range
+    }?.fee ?: -1.0 // If no matching range is found, return -1 as an error indicator
+}
+
+fun computePhilhealth(n: Double, ranges: List<philhealthRange>): Double {
+    val currentYear = Year.now().value
+    val rate = ranges.filter { range -> range.year == currentYear }.first().rate
+    val maxSalary = ranges.filter { range -> range.year == currentYear }.first().max_salary
+
+    if (n <= maxSalary) {
+        return n * rate / 2
+    }
+
+    return maxSalary * rate
+}
+
+fun computepagIbig(n: Double, ranges: List<pagibigRange>): Double {
+    val rate =  ranges.firstOrNull { range -> range.max <= n }?.rate ?: ranges.filter { range -> range.max > n }.first().rate
+    val fee = n * rate
+
+    if (fee > 100.0) {
+        return 100.0
+    }
+    return fee
+}
+
+fun computeIncomeTax (salary: Double, contributions: Double, ranges: List<incomeRange>): Double {
+    val min = ranges.firstOrNull { range ->
+                (range.min == -1.0 && salary <= range.max) || // If min is -1, then n should be less than or equal to max
+                (range.max == -1.0 && salary >= range.min) || // If max is -1, then n should be greater than or equal to min
+                (salary in range.min..range.max) // Otherwise, n should be within the min and max range
+                }?.min ?: -1.0 // If no matching range is found, return -1 as an error indicator
+    val rate = ranges.firstOrNull { range ->
+                (range.min == -1.0 && salary <= range.max) || // If min is -1, then n should be less than or equal to max
+                (range.max == -1.0 && salary >= range.min) || // If max is -1, then n should be greater than or equal to min
+                (salary in range.min..range.max) // Otherwise, n should be within the min and max range
+                 }?.percent ?: -1.0 // If no matching range is found, return -1 as an error indicator
+    val additional = ranges.firstOrNull { range ->
+                (range.min == -1.0 && salary <= range.max) || // If min is -1, then n should be less than or equal to max
+                (range.max == -1.0 && salary >= range.min) || // If max is -1, then n should be greater than or equal to min
+                (salary in range.min..range.max) // Otherwise, n should be within the min and max range
+                }?.additional ?: -1.0 // If no matching range is found, return -1 as an error indicator
+
+    val taxable_income = salary - contributions
+    val compensation_lvl = (taxable_income - (min - 1)) * rate
+
+    return additional + compensation_lvl
 }
