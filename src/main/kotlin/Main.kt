@@ -46,7 +46,7 @@ fun main() {
 
     println("\n-- Monthly Contributions --")
     println("Income Tax: P ${DecimalFormat("#,###.00").format(incomeTax)}")
-    println("Net Pay after Tax: P ${netPay}")
+    println("Net Pay after Tax: P ${DecimalFormat("#,###.00").format(netPay)}")
 
     // Deductions
     println("\n-- Deductions --")
@@ -197,7 +197,7 @@ fun computeIncomeTax (salary: Double, contributions: Double, ranges: List<income
                 (taxable_income in range.min..range.max) // Otherwise, n should be within the min and max range
                 }?.additional ?: -1.0 // If no matching range is found, return -1 as an error indicator
 
-    val compensation_lvl = (taxable_income - (min - 1)) * rate
+    val compensation_lvl = (taxable_income - min) * rate
 
     return additional + compensation_lvl
 }
