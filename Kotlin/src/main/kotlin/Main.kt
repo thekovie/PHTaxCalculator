@@ -149,7 +149,7 @@ fun readPagibigTable(file: File): List<pagibigRange> {
 
 fun computeSSS(n: Double, ranges: List<sssRange>): Double {
     return ranges.firstOrNull { range ->
-                (range.min == -1.0 && n <= range.max) || // If min is -1, then n should be less than or equal to max
+        (range.min == -1.0 && n <= range.max) || // If min is -1, then n should be less than or equal to max
                 (range.max == -1.0 && n >= range.min) || // If max is -1, then n should be greater than or equal to min
                 (n in range.min..range.max) // Otherwise, n should be within the min and max range
     }?.fee ?: -1.0 // If no matching range is found, return -1 as an error indicator
@@ -182,20 +182,20 @@ fun computeIncomeTax (salary: Double, contributions: Double, ranges: List<income
     val taxable_income = salary - contributions
 
     val min = ranges.firstOrNull { range ->
-                (range.min == -1.0 && taxable_income <= range.max) || // If min is -1, then n should be less than or equal to max
+        (range.min == -1.0 && taxable_income <= range.max) || // If min is -1, then n should be less than or equal to max
                 (range.max == -1.0 && taxable_income >= range.min) || // If max is -1, then n should be greater than or equal to min
                 (taxable_income in range.min..range.max) // Otherwise, n should be within the min and max range
-                }?.min ?: -1.0 // If no matching range is found, return -1 as an error indicator
+    }?.min ?: -1.0 // If no matching range is found, return -1 as an error indicator
     val rate = ranges.firstOrNull { range ->
-                (range.min == -1.0 && taxable_income <= range.max) || // If min is -1, then n should be less than or equal to max
+        (range.min == -1.0 && taxable_income <= range.max) || // If min is -1, then n should be less than or equal to max
                 (range.max == -1.0 && taxable_income >= range.min) || // If max is -1, then n should be greater than or equal to min
                 (taxable_income in range.min..range.max) // Otherwise, n should be within the min and max range
-                 }?.percent ?: -1.0 // If no matching range is found, return -1 as an error indicator
+    }?.percent ?: -1.0 // If no matching range is found, return -1 as an error indicator
     val additional = ranges.firstOrNull { range ->
-                (range.min == -1.0 && taxable_income <= range.max) || // If min is -1, then n should be less than or equal to max
+        (range.min == -1.0 && taxable_income <= range.max) || // If min is -1, then n should be less than or equal to max
                 (range.max == -1.0 && taxable_income >= range.min) || // If max is -1, then n should be greater than or equal to min
                 (taxable_income in range.min..range.max) // Otherwise, n should be within the min and max range
-                }?.additional ?: -1.0 // If no matching range is found, return -1 as an error indicator
+    }?.additional ?: -1.0 // If no matching range is found, return -1 as an error indicator
 
     val compensation_lvl = (taxable_income - min) * rate
 
