@@ -11,10 +11,10 @@ data class sssRange(val min: Double, val max: Double, val fee: Double)
 data class pagibigRange(val min: Double, val max: Double, val rate: Double)
 
 fun main() {
-    val incomeTable = File("src/main/resources/income_tax_table.csv")
-    val philhealthTable = File("src/main/resources/philhealth_table.csv")
-    val sssTable = File("src/main/resources/sss_table.csv")
-    val pagibigTable = File("src/main/resources/pagibig_tax.csv")
+    val incomeTable = File("../resources/income_tax_table.csv")
+    val philhealthTable = File("../resources/philhealth_table.csv")
+    val sssTable = File("../resources/sss_table.csv")
+    val pagibigTable = File("../resources/pagibig_tax.csv")
 
     val readIncome = readIncomeTable(incomeTable)
     val readPhilhealth = readPhilhealthTable(philhealthTable)
