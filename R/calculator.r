@@ -31,7 +31,7 @@ if (salary >= x$max_salary) {
 } else if (salary <= x$min_salary) {
     philhealth <- x$min_salary  
 } else {
-    philhealth <- x$salary
+    philhealth <- salary
 }
 philhealth <- (philhealth * x$rate[1]) / 2
 contributions <- contributions + philhealth
