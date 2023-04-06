@@ -26,8 +26,8 @@ cat('SSS:', sss, '\n')
 philhealth_table <- read.csv('../resources/philhealth_table.csv')
 x <- subset(philhealth_table, year == 2023)
 # print(x)
-if (salary > x$max_salary) {
-    philhealth <- x$max_salary
+if (salary >= x$max_salary) {
+    philhealth <- x$max_salary * 2
 } else {
     philhealth <- salary  
 }
