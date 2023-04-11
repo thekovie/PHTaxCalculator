@@ -1,3 +1,11 @@
+/*
+    ********************
+    Last names: ARIZALA, ASPECTO, MARTINEZ, NIÑO
+    Language: Kotlin
+    Paradigm(s): Functional and Procedural
+    ********************
+ */
+
 import java.io.File
 import java.time.Year
 import kotlin.math.round
@@ -102,8 +110,8 @@ fun readPhilhealthTable(file: File): List<philhealthRange> {
             val values = line.split(",")
             philhealthRange(
                 year = values[0].toInt(),
-                max_salary = values[1].toDouble(),
-                rate = values[2].toDouble()
+                max_salary = values[2].toDouble(),
+                rate = values[3].toDouble()
             )
         }.toList()
     }
