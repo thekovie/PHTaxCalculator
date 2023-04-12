@@ -41,10 +41,10 @@ cat('PhilHealth:', philhealth, '\n')
 income_tax_table <- read.csv('../resources/income_tax_table.csv')
 taxable <- salary - contributions
 x <- subset(income_tax_table, min_range <= taxable & max_range >= taxable | taxable > min_range & max_range == -1)
-cat('Taxable income:', taxable, '\n')
 income_tax <- (taxable - x$min_range) * x$percentage + x$additional
 cat('Total contributions:', contributions, '\n')
 cat('Income tax:',income_tax, '\n')
+cat('Net pay after tax:', salary - income_tax, '\n')
 deductions <- contributions + income_tax
 cat('Total deductions:', deductions, '\n')
 cat('Net pay after deductions:', salary - deductions, '\n')
